@@ -13,5 +13,12 @@ var testName = 'Test Test';
 var assertCount = 1;
 var message = "Test";
 var stackTrace = "TBD";
-spiraClient.recordTestRun(projectId, testCaseId, releaseId, testSetId, startDate, endDate, executionStatusId, testName, assertCount, message, stackTrace);
+spiraClient.recordTestRun(projectId, testCaseId, releaseId, testSetId, startDate, endDate, executionStatusId, testName, assertCount, message, stackTrace, success_callback, failure_callback);
 
+function success_callback() {
+    console.log('Success Callback called');
+}
+
+function failure_callback() {
+    console.log('Failure Callback called');
+}

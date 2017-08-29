@@ -27,7 +27,7 @@ function SpiraClient(protocol, host, port, vdir, login, apiKey) {
     console.log('Created SpiraTest API Client.');
 }
 
-SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId, testSetId, startDate, endDate, executionStatusId, testName, assertCount, message, stackTrace) {
+SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId, testSetId, startDate, endDate, executionStatusId, testName, assertCount, message, stackTrace, success_callback, failure_callback) {
     var path;
     if (this._vdir && this._vdir != '') {
         path = '/' + this._vdir + this._SPIRA_URL_SUFFIX + 'projects/{project_id}/test-runs/record';
@@ -59,7 +59,7 @@ SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId,
 
     //Make the REST Call to send the data to Spira
     const postData = JSON.stringify(remoteTestRun);
-    console.log('POST DATA: ' + postData);  
+    //console.log('POST DATA: ' + postData);  
 
     const options = {
         hostname: this._host,
@@ -87,27 +87,38 @@ SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId,
         //console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
+            //console.log(`BODY: ${chunk}`);
             if (res.statusCode != 200) {
                 console.log(`BODY: ${chunk}`);
             }
         });
         res.on('end', () => {
             if (res.statusCode == 200) {
-                console.log('Successfully sent test results to SpiraTest.');    
+                console.log('Successfully sent test results to SpiraTest.');
+                if (success_callback) {
+                    success_callback();
+                }
             }
             else {
-                console.log('There was an error sending the test results to SpiraTest - ' + res.statusMessage + ' (' + res.statusCode + ')');                    
+                console.log('There was an error sending the test results to SpiraTest - ' + res.statusMessage + ' (' + res.statusCode + ')');
+                if (failure_callback) {
+                    failure_callback(res);
+                }                    
             }
         });
     });
     
     req.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
+        if (failure_callback) {
+            failure_callback(e);
+        }
     });
     
     // write data to request body
     req.write(postData);
-    req.end();      
+    req.end();
+    //console.log('Request Sent'); 
 };
 
 //Creates a WCF JSON date in format /Date(1245398693390)/ from a JS date object - no time zone required
