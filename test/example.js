@@ -1,15 +1,52 @@
-    // load Unit.js module
-    var test = require('unit.js');
-	
+var test = require('unit.js');
+var SpiraReporter = require('../reporter/SpiraReporter.js');
+
+//set the SpiraTest options
+global.spiraOptions = {
+  projectId: 1,
+  testCaseId: 5,
+  releaseId: 2,
+  testSetId: null,      
+  login: 'fredbloggs',
+  apiKey: '{7A05FD06-83C3-4436-B37F-51BCF0060483}',
+  protocol: 'http',
+  host: '127.0.0.1',
+  vdir: 'spira'
+};   
+
+describe('Example Test', function(){
+  it('sample pass', function(){
     // just for example of tested value
-    var example = 'hello';
-    
-	// assert that example variable is a string
-    test.string(example);
-    
-	// or with Must.js
-    test.must(example).be.a.string();
-    
-	// or with assert
-    test.assert(typeof example === 'string');
-	
+    var example = 'hello world';
+    test
+      .string(example)
+        .startsWith('hello')
+        .match(/[a-z]/)
+      .given(example = 'you are welcome')
+        .string(example)
+          .endsWith('welcome')
+          .contains('you')
+      .when('"example" becomes an object', function(){
+        example = {
+          message: 'hello world',
+          name: 'Nico',
+          job: 'developper',
+          from: 'France'
+        };
+      })
+      .then('test the "example" object', function(){
+        test
+          .object(example)
+            .hasValue('developper')
+            .hasProperty('name')
+            .hasProperty('from', 'France')
+            .contains({message: 'hello world'})
+        ;
+      })
+      .if(example = 'bad value')
+        .error(function(){
+          example.badMethod();
+        })
+    ;
+  });
+});

@@ -27,7 +27,7 @@ function SpiraClient(protocol, host, port, vdir, login, apiKey) {
     console.log('Created SpiraTest API Client.');
 }
 
-SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId, testSetId, startDate, endDate, executionStatusId, testName, assertCount, message, stackTrace, success_callback, failure_callback) {
+SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId, testSetId, startDate, endDate, executionStatusId, testName, assertCount, message, stackTrace, steps, success_callback, failure_callback) {
     var path;
     if (this._vdir && this._vdir != '') {
         path = '/' + this._vdir + this._SPIRA_URL_SUFFIX + 'projects/{project_id}/test-runs/record';
@@ -41,7 +41,6 @@ SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId,
     const startDateWcf = this._createWcfDate(startDate);
     const endDateWcf = this._createWcfDate(endDate);
     
-    //Construct the data object
     var remoteTestRun = {
         TestCaseId: testCaseId,
         ReleaseId: releaseId,
@@ -54,7 +53,8 @@ SpiraClient.prototype.recordTestRun = function(projectId, testCaseId, releaseId,
         RunnerAssertCount: assertCount,
         RunnerMessage: message,
         RunnerStackTrace: stackTrace,
-        TestRunFormatId: 1 /* Plain Text */
+        TestRunFormatId: 1 /* Plain Text */,
+        TestRunSteps: steps
     };
 
     //Make the REST Call to send the data to Spira
