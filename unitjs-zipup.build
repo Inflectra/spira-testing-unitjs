@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="UnitJS / MochaJS Reporter" default="zipup">
+
+	<target name="zipup" description="Zips up the whole application for deployment">
+		<echo message="Zipping up entire application" />
+		<zip zipfile="UnitJS-MochaJS-Reporter.zip" verbose="true" comment="UnitJS / MochaJS Reporter for SpiraTest">
+			<fileset>
+				<include name="reporter/*.js" />
+				<include name="test/*.js" />
+				<include name="readme.md" />
+			</fileset>
+		</zip>
+	</target>
+	
+</project>
